@@ -11,7 +11,7 @@ inputs:
   host:
     description: 'Remove host'
     required: true
-  private-key-path:
+  private-key:
     description: 'SSH private key'
     required: true
   run:
@@ -21,9 +21,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - run: printf '%s\n' "$INPUT_SSH_PRIVATE_KEY" > "$HOME/.ssh/id_rsa"
+    - run: printf '%s\n' "${{ inputs.private-key }}" > "$HOME/.ssh/id_rsa"
     - run: chmod 600 "$HOME/.ssh/id_rsa"
     - run: eval $(ssh-agent)
     - run: ssh-add "$HOME/.ssh/id_rsa"
-    - run: ssh -o StrictHostKeyChecking=no -i ${{ inputs.private-key-path }} ${{ inputs.user }}@${{ inputs.host }} "${{ inputs.run }}"
+    - run: ssh -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa ${{ inputs.user }}@${{ inputs.host }} "${{ inputs.run }}"
       shell: bash
