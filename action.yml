@@ -21,5 +21,9 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - run: ssh -i ${{ inputs.private-key-path }} ${{ inputs.user }}@${{ inputs.host }} "${{ inputs.run }}"
+    - run: printf '%s\n' "$INPUT_SSH_PRIVATE_KEY" > "$HOME/.ssh/id_rsa"
+    - run: chmod 600 "$HOME/.ssh/id_rsa"
+    - run: eval $(ssh-agent)
+    - run: ssh-add "$HOME/.ssh/id_rsa"
+    - run: ssh -o StrictHostKeyChecking=no -i ${{ inputs.private-key-path }} ${{ inputs.user }}@${{ inputs.host }} "${{ inputs.run }}"
       shell: bash
